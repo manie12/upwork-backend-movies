@@ -2,8 +2,10 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 
-// import useRoutes from './Routes/useRoutes.js';
-
+//config
+import { MONGODB } from './config.js';
+import useRoutes from './Routes/userRoutes.js';
+import postRoutes from './Routes/postRoutes.js';
 const app = express();
 
 app.use(express.json({ limit: "30mb", extended: true }));
@@ -12,13 +14,18 @@ app.use(cors());
 
 app.use(useRoutes);
 
-const connect__url = "mongodb+srv://simplify12:simplify12@cluster0.rtplg.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+app.use("/post", postRoutes);
+
+const connect__url = MONGODB;
 
 const PORT = process.env.PORT || 5000;
 
 
-mongoose.connect(connect__url, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }).then((error) => {
-    console.log(error)
+mongoose.connect(connect__url,).then((error) => {
+    err => {
+        if (err) throw err;
+        console.log('connected to MongoDB')
+    };
 });
 
 
