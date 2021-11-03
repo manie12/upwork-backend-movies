@@ -4,7 +4,15 @@ const userSchema = new mongoose.Schema({
     postMessage: String,
     creator: String,
     id: String,
+    likeCount: {
+        type: [String],
+        default: []
+    },
 
+    comment: {
+        type: [String],
+        default: []
+    }
 
 });
 

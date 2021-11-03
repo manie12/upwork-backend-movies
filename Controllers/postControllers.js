@@ -1,25 +1,38 @@
 import postModel from '../Models/postModel.js';
 
-export const getPost = async (res, req) => {
+export const getPost = async (req, res) => {
 
     try {
-        const Post = new postModel.find();
-
+        const Post = await postModel.find();
         res.status(201).json(Post);
 
     } catch (error) {
+        console.log(error)
         res.status(401).json({ message: "could not post,sth went wrong" })
     }
 
 }
-export const postMessage = async (res, req) => {
-    const post = req.body;
 
-    const newPost = new postModel(post);
+export const getPostById = async (req, res) => {
+    const { id } = req.params;
     try {
-        await newPost.save();
+        const Post = await postModel.findById(id);
+        res.status(201).json(Post);
 
-        res.status(201).json(newPost);
+    } catch (error) {
+        console.log(error)
+        res.status(401).json({ message: "could not post,sth went wrong" })
+    }
+
+}
+
+export const postMessage = async (req, res) => {
+    const { postMessage } = req.body;
+    const newPost = new postModel({ postMessage, creator: req?.user?.email });
+    try {
+        const postedData = await newPost.save();
+
+        res.status(201).json(postedData);
 
     } catch (error) {
         res.status(401).json({ message: "could not post,sth went wrong" })
@@ -28,10 +41,10 @@ export const postMessage = async (res, req) => {
 }
 
 
-export const updatePost = async (res, req) => {
-    const { id } = req.body;
+export const updatePost = async (req, res) => {
+    const { id } = req.params;
+    console.log(id)
     const post = req.body;
-
 
     try {
         const updatedPost = await postModel.findByIdAndUpdate(id, post, { new: true });
@@ -44,18 +57,64 @@ export const updatePost = async (res, req) => {
 
 }
 
-export const deletePost = async (res, req) => {
+export const deletePost = async (req, res) => {
 
-    const { id } = req.body;
-
+    const { id } = req.params;
 
     try {
-        await postModel.findByIdAndDelete(id);
+        await postModel.findByIdAndRemove(id);
 
         res.status(201).json("Post Deleted Successfully");
 
     } catch (error) {
+        console.log(error)
         res.status(401).json({ message: "could not Delete,sth went wrong" })
     }
 
 }
+
+export const likePost = async (req, res) => {
+
+    const { id } = req.params;
+
+    try {
+        const post = await postModel.findById(id);
+        const index = await post.likeCount.findIndex((email) => email === String(req?.user?.email));
+        if (index === -1) {
+            post.likeCount.push(req?.user?.email);
+            res.status(201).json(` you have liked ${req?.user?.email} post `);
+
+        } else {
+            post.likeCount = post.likeCount.filter((email) => email !== req?.user?.email);
+            res.status(201).json(` you have disliked ${req?.user?.email} post `);
+
+        }
+        const likedPost = await postModel.findByIdAndUpdate(id, post, { new: true });
+
+        res.json(likedPost.length);
+    } catch (error) {
+        console.log(error)
+        res.status(401).json({ message: "could not like,sth went wrong" })
+    }
+
+}
+
+
+export const commentPost = async (req, res) => {
+
+    const { id } = req?.params;
+    const { comment } = req?.body;
+
+    try {
+        const post = await postModel.findById(id);
+        post.comment.push(comment)
+        const likedPost = await postModel.findByIdAndUpdate(id, post, { new: true });
+
+        res.status(201).json(likedPost);
+    } catch (error) {
+        console.log(error)
+        res.status(401).json({ message: "could not like,sth went wrong" })
+    }
+
+}
+
