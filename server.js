@@ -20,7 +20,9 @@ app.use("/users", useRoutes);
 
 app.use("/post", postRoutes);
 
-
+app.get("/", (req, res) => {
+    res.sendFile("welocme to simplify api")
+})
 const PORT = process.env.PORT || 5000;
 
 
