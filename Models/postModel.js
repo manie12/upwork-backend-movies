@@ -1,21 +1,14 @@
 import mongoose from 'mongoose';
 
-const userSchema = new mongoose.Schema({
-    postMessage: String,
-    creator: String,
+const movieSchema = new mongoose.Schema({
+    movie: String,
+    rating: String,
+    duration: String,
     id: String,
-    likeCount: {
-        type: [String],
-        default: []
-    },
 
-    comment: {
-        type: [String],
-        default: []
-    }
 
 });
 
-const userPost = mongoose.model('Post', userSchema);
+const moviePost = mongoose.model('Post', movieSchema);
 
-export default userPost;
+export default moviePost;
