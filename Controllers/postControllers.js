@@ -31,8 +31,8 @@ export const postMovie = async (req, res) => {
     const { movie, rating, duration } = req.body;
 
     try {
-        const OriginalMovie = movieModel.find((mov) => mov === movie);
-        if (OriginalMovie === movie) {
+        const defaultMovie = movieModel.find((mov) => mov === movie);
+        if (defaultMovie === movie) {
 
 
             let Movie = await movieModel.findByOneAndUpdate(movie, req.body, {
