@@ -3,8 +3,8 @@ import movieModel from '../Models/postModel.js';
 export const getMovie = async (req, res) => {
 
     try {
-        const Movie = await movieModel?.find();
-
+        const Movie = await movieModel?.find().sort({ field: 'desc' });
+        ;
         return res.status(201).json(Movie);
 
     } catch (error) {
@@ -29,19 +29,22 @@ export const getMovieById = async (req, res) => {
 
 export const postMovie = async (req, res) => {
     const { movie, rating, duration } = req.body;
-
+    const createdAt = movieModel?.createdAt;
     try {
         const defaultMovie = movieModel.find((mov) => mov === movie);
+
         if (defaultMovie === movie) {
 
-
-            let Movie = await movieModel.findByOneAndUpdate(movie, req.body, {
+            const dateUpdate = createdAt?.toISOString()
+            let Movie = await movieModel.findByOneAndUpdate(movie, { movie, rating, duration, dateUpdate }, {
                 new: true
             });
 
             return res.status(201).json(Movie);
         } else {
-            const newPost = new movieModel({ movie, rating, duration });
+            const dateUpdate = createdAt?.toISOString()
+
+            const newPost = new movieModel({ movie, rating, duration, dateUpdate });
 
             const Movie = await newPost.save();
 
